@@ -1,0 +1,18 @@
+{
+  "name": "simple-app",
+  "version": "1.0.0",
+  "description": "a simple node app (no framework)",
+  "main": "",
+  "dependencies": {
+    "sha1": "^1.1.1"
+  },
+  "devDependencies": {
+    "sha1": "^1.1.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

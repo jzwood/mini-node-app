@@ -1,15 +1,17 @@
 var querystring = require("querystring");
 var fs = require('fs');
+var root = __dirname;
 
 function start(response, postData) {
   console.log("Request handler 'start' was called.");
 
-  fs.readFile('./templates/body.html', 'utf8', (err, data) => {
+  fs.readFile(root + '/templates/body.html', 'utf8', (err, data) => {
     if (err) throw err;
     response.writeHead(200, {"Content-Type": "text/html"});
     response.write(data);
     response.end();
     console.log(data);
+
   });
 
   var body = '<html>'+
@@ -36,5 +38,16 @@ function upload(response, postData){
 
 }
 
+function loadResource(response,path,head){
+  fs.readFile(root + path, 'utf8', (err, data) => {
+    if (err) throw err;
+    response.writeHead(200, {"Content-Type": head});
+    response.write(data);
+    response.end();
+    console.log(data);
+  });
+}
+
 exports.start = start;
 exports.upload = upload;
+exports.loadResource = loadResource;

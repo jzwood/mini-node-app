@@ -8,4 +8,7 @@ handle["/"] = requestHandlers.start;
 handle["/start"] = requestHandlers.start;
 handle["/upload"] = requestHandlers.upload;
 
+//for images and css etc
+handle["load-resource"] = requestHandlers.loadResource;
+
 server.start(router.route, handle);

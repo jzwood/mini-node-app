@@ -1,6 +1,5 @@
 var http = require("http");
 var url = require("url");
-// var sha1 = require('sha1');//for 1 way hash encryptions // let ct = sha1("message");
 
 function start(route, handle){
   function onRequest(request, response) {

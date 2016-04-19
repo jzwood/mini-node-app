@@ -1,7 +1,6 @@
 /*
-router takes urls, post data, resource requests, and the handler hash map.
-if the hash map contains instructions the data is sent to handler,
-otherwise it is rejected
+router separates loaded items into page loads (custom pages) and
+resources implicity loaded within pages, ie images, css, etc
 */
 
 function route(handle, pathname, response, postData) {

@@ -1,3 +1,7 @@
+/*
+this is where the magic starts. 'npm start' 
+*/
+
 var server = require("./server");
 var router = require("./router");
 

@@ -1,31 +1,24 @@
-var querystring = require("querystring");
-var fs = require('fs');
-var root = __dirname;
+var querystring = require("querystring"),
+  fs = require('fs'),
+  Handlebars = require('handlebars'),
+  root = __dirname;
 
 function start(response, postData) {
   console.log("Request handler 'start' was called.");
 
-  fs.readFile(root + '/templates/body.html', 'utf8', (err, data) => {
+  fs.readFile(root + '/templates/body.hbs', 'utf8', (err, data) => {
     if (err) throw err;
     response.writeHead(200, {"Content-Type": "text/html"});
-    response.write(data);
+
+    var template = Handlebars.compile(data);
+    var context = {title: "My New Post", posted: postData};
+    var html = template(context);
+
+    response.write(html);
     response.end();
-    console.log(data);
+    // console.log(data);
 
   });
-
-  var body = '<html>'+
-  '<head>'+
-  '<meta http-equiv="Content-Type" content="text/html; '+
-  'charset=UTF-8" />'+
-  '</head>'+
-  '<body>'+
-  '<form action="/upload" method="post">'+
-  '<textarea name="text" rows="20" cols="60"></textarea>'+
-  '<input type="submit" value="Submit text" />'+
-  '</form><p>'+ postData
-  '</p></body>'+
-  '</html>';
 
 }
 
@@ -38,13 +31,14 @@ function upload(response, postData){
 
 }
 
+//this is server side resource loading handling (not tied to a url)
 function loadResource(response,path,head){
   fs.readFile(root + path, 'utf8', (err, data) => {
     if (err) throw err;
     response.writeHead(200, {"Content-Type": head});
     response.write(data);
     response.end();
-    console.log(data);
+    //console.log(data);
   });
 }
 

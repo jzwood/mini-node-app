@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <title>Node minus framework</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+  <script src="test.js"></script>
+  <link href="/static/styles.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+  <h1>Hi! {{title}}</h1>
+  <form action="/upload" method="post">
+  <textarea name="text" rows="20" cols="60"></textarea>
+    <input type="submit" value="Submit text" />
+  </form>
+  {{#if posted}}
+    <p> you though "{{posted}}" was a
+    clever thing to say. </p>
+  {{/if}}
+
+</body>
+</html>

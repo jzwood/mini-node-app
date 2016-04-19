@@ -1,13 +1,18 @@
-var path = require('path');
+/*
+router takes urls, post data, resource requests, and the handler hash map.
+if the hash map contains instructions the data is sent to handler,
+otherwise it is rejected
+*/
 
-extensions = {
+var path = require('path'),
+  extensions = {
     ".html" : "text/html",
     ".css" : "text/css",
     ".js" : "application/javascript",
     ".png" : "image/png",
     ".gif" : "image/gif",
     ".jpg" : "image/jpeg"
-};
+  };
 
 function route(handle, pathname, response, postData) {
   console.log("About to route a request for " + pathname, "extension:",path.extname(pathname));

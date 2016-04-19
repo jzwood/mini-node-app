@@ -1,24 +1,20 @@
+/*
+  requestHandlers contains only the unique content for each page.
+  path to .hbs file plus data
+*/
+
+
 var querystring = require("querystring"),
-  fs = require('fs'),
-  Handlebars = require('handlebars'),
-  root = __dirname;
+    loader = require("./loadFile");
+
+// function home(response, postData){
+//
+// }
 
 function start(response, postData) {
-  console.log("Request handler 'start' was called.");
 
-  fs.readFile(root + '/templates/body.hbs', 'utf8', (err, data) => {
-    if (err) throw err;
-    response.writeHead(200, {"Content-Type": "text/html"});
-
-    var template = Handlebars.compile(data);
-    var context = {title: "My New Post", posted: postData};
-    var html = template(context);
-
-    response.write(html);
-    response.end();
-    // console.log(data);
-
-  });
+  var context = {title: "My New Post", posted: postData};
+  loader.loadHTML(response,'/templates/body.hbs',context);
 
 }
 
@@ -31,17 +27,7 @@ function upload(response, postData){
 
 }
 
-//this is server side resource loading handling (not tied to a url)
-function loadResource(response,path,head){
-  fs.readFile(root + path, 'utf8', (err, data) => {
-    if (err) throw err;
-    response.writeHead(200, {"Content-Type": head});
-    response.write(data);
-    response.end();
-    //console.log(data);
-  });
-}
-
+exports.home = start;
 exports.start = start;
 exports.upload = upload;
-exports.loadResource = loadResource;
+exports.loadResource = loader.loadResource;

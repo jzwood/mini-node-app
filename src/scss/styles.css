@@ -1,0 +1,26 @@
+html,body{
+  background: #FAFAFA;
+}
+
+h1{
+  text-align: center;
+}
+
+input{
+  border-radius: 5px;
+  border: solid 1px black;
+}
+
+.form{
+  /*height: 18pt;*/
+  font-size: 18pt;
+  padding-left: 10px;
+}
+
+.input{
+  width:10ch;
+}
+
+.container{
+  text-align: center;
+}

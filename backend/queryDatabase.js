@@ -1,9 +1,36 @@
 //makes sqlite data queries
 var sqlite3 = require('sqlite3').verbose();
 
-function registerNewUser(repo, login, pwhash, callback) {
+function loginUser(db_path, login, pwhash, rejectText, acceptText, callback) {
 
-  var db = new sqlite3.Database(repo);
+  var db = new sqlite3.Database(db_path);
+
+  var context = {"heading":"ASYNC ISSUES"};//default
+
+  db.serialize(function() {
+    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT)");
+    db.get("SELECT name, pwhash FROM user_info WHERE name = '" + login +
+    "' AND pwhash = '" + pwhash + "'", function(err, user) {
+      if (err) throw err;
+      if (user) {
+        context["heading"] = acceptText;
+        context["login"] = login;
+        context["pw"] = pwhash;
+      } else {
+        context["heading"] = rejectText;
+      }
+    });
+  });
+
+  db.close(function() {
+    console.log('loading page');
+    callback(context);
+  });
+}
+
+function registerNewUser(db_path, login, pwhash, rejectText, acceptText, callback) {
+
+  var db = new sqlite3.Database(db_path);
 
   var context = {"heading":"ASYNC ISSUES"};//default
 
@@ -14,11 +41,11 @@ function registerNewUser(repo, login, pwhash, callback) {
       if (err) throw err;
       console.log('user is: ', user);
       if (user) {
-        context["heading"] = "This name is already known to us.";
+        context["heading"] = rejectText;
       } else {
         stmt.run(login, pwhash);
         stmt.finalize();
-        context["heading"] = "You are one of us now.";
+        context["heading"] = acceptText;
         context["login"] = login;
         context["pw"] = pwhash;
       }
@@ -32,3 +59,4 @@ function registerNewUser(repo, login, pwhash, callback) {
 }
 
 exports.register = registerNewUser;
+exports.authenticate = loginUser; 

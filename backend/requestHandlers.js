@@ -37,8 +37,8 @@ function signUp(response, postData) {
     var secure_pw = sha1(String(pw.trim())),
     login = String(login).trim();
 
-    queryDB.register(repo, templatePath, login, secure_pw, response, function(res,path,ctx){
-      loader.loadHTML(res, path, ctx);
+    queryDB.register(repo, login, secure_pw, function(context){
+      loader.loadHTML(response, templatePath, context);
     });
     // db.serialize(function() {
     //   db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT)");

@@ -1,7 +1,7 @@
 //makes sqlite data queries
 var sqlite3 = require('sqlite3').verbose();
 
-function registerNewUser(repo, tempPath, login, pwhash, response, callback) {
+function registerNewUser(repo, login, pwhash, callback) {
 
   var db = new sqlite3.Database(repo);
 
@@ -27,7 +27,7 @@ function registerNewUser(repo, tempPath, login, pwhash, response, callback) {
 
   db.close(function() {
     console.log('loading page');
-    callback(response, tempPath, context);
+    callback(context);
   });
 }
 

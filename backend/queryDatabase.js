@@ -8,7 +8,11 @@ function loginUser(db_path, login, pwhash, rejectText, acceptText, callback) {
   var context = {"heading":"ASYNC ISSUES"};//default
 
   db.serialize(function() {
-    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT)");
+    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
+    var date = new Date().toLocaleDateString();
+    db.run("UPDATE user_info SET date = '" + date +
+    "' WHERE name = '" + login + "' AND pwhash = '" + pwhash +
+    "' AND date != '" + date + "'");
     db.get("SELECT name, pwhash FROM user_info WHERE name = '" + login +
     "' AND pwhash = '" + pwhash + "'", function(err, user) {
       if (err) throw err;
@@ -35,15 +39,16 @@ function registerNewUser(db_path, login, pwhash, rejectText, acceptText, callbac
   var context = {"heading":"ASYNC ISSUES"};//default
 
   db.serialize(function() {
-    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT)");
-    var stmt = db.prepare("INSERT INTO user_info VALUES (?,?)");
-    db.get("SELECT name, pwhash FROM user_info WHERE name = '" + login + "'", function(err, user) {
+    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
+    var stmt = db.prepare("INSERT INTO user_info VALUES (?,?,?)");
+    db.get("SELECT name, pwhash, date FROM user_info WHERE name = '" + login + "'", function(err, user) {
       if (err) throw err;
       console.log('user is: ', user);
       if (user) {
         context["heading"] = rejectText;
       } else {
-        stmt.run(login, pwhash);
+        var date = new Date().toLocaleDateString();
+        stmt.run(login, pwhash, date);
         stmt.finalize();
         context["heading"] = acceptText;
         context["login"] = login;
@@ -59,4 +64,4 @@ function registerNewUser(db_path, login, pwhash, rejectText, acceptText, callbac
 }
 
 exports.register = registerNewUser;
-exports.authenticate = loginUser; 
+exports.authenticate = loginUser;

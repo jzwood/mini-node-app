@@ -34,7 +34,7 @@ function loadHTML(response, relative_path, context){
 function loadResource(response,pathname){
   var head = extensions[path.extname(pathname)];
   if(head){
-    fs.readFile((root + '/../../..' + pathname), 'utf8', (err, data) => {
+    fs.readFile((root + '/../..' + pathname), 'utf8', (err, data) => {
       if (err) throw err;
       response.writeHead(200, {"Content-Type": head});
       response.write(data);

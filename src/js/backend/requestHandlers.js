@@ -7,8 +7,8 @@ loader = require("./loadFile"),
 queryDB = require('./queryDatabase'),
 sha1 = require('sha1'); //for 1 way hash encryptions // let ct = sha1("message");
 
-var database = './backend/database/appUserData';
-var templatePath = '/templates/body.hbs';
+var database = './src/js/backend/database/appUserData';
+var templatePath = '/src/templates/body.hbs';
 
 
 function home(response, postData) {
@@ -17,7 +17,7 @@ function home(response, postData) {
     "heading": "Hi. Who are you?"
   };
 
-  loader.loadHTML(response, '/templates/body.hbs', context);
+  loader.loadHTML(response, templatePath, context);
 }
 
 function signIn(response, postData) {

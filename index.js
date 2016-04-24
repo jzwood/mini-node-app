@@ -2,10 +2,10 @@
 this is where the magic starts. 'npm start'
 */
 
-var server = require("./backend/server");
-var router = require("./backend/router");
+var server = require("./src/js/backend/server");
+var router = require("./src/js/backend/router");
 
-var requestHandlers = require("./backend/requestHandlers");
+var requestHandlers = require("./src/js/backend/requestHandlers");
 
 var handle = {};//add custom page loads to handle here
 handle["/"] = requestHandlers.home;

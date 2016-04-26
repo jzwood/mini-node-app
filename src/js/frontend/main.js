@@ -1,4 +1,7 @@
 require('../../scss/index.scss');
 
-const hello = "[ it works! ]";
-console.log("verifying es6...", hello);
+import { Hello } from './hello'
+
+
+const hello = new Hello()
+console.log("verifying es6...", hello.message);

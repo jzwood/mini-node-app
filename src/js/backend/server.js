@@ -1,6 +1,8 @@
 var http = require("http");
 var url = require("url");
 
+var port = Number(process.env.PORT || 3000);
+
 function start(route, handle){
   function onRequest(request, response) {
     var postData = "";
@@ -20,7 +22,7 @@ function start(route, handle){
 
   }
 
-  http.createServer(onRequest).listen(8080);
+  http.createServer(onRequest).listen(port);
   console.log("Server has started.");//,"encrypted",sha1("message"));
 }
 

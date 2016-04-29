@@ -2,22 +2,23 @@
 requestHandlers contains only the unique content for each page.
 */
 
-var querystring = require("querystring"),
-loader = require("./loadFile"),
+var querystring = require('querystring'),
+loader = require('./loadFile'),
 queryDB = require('./queryDatabase'),
+cookies = require('./handleCookies'),
 sha1 = require('sha1'); //for 1 way hash encryptions // let ct = sha1("message");
 
-var database = './src/js/backend/database/appUserData';
-var templatePath = '/src/templates/body.hbs';
+var tempPath = '/src/templates/',
+loginPath = '/src/templates/login.hbs';
 
-
-function home(response, postData) {
+function homeGate(response, postData) {
+  var id = cookies.getCookie('id');
 
   var context = {
     "heading": "Hi. Who are you?"
   };
 
-  loader.loadHTML(response, templatePath, context);
+  loader.loadHTML(response, loginPath, context);
 }
 
 function signIn(response, postData) {
@@ -32,13 +33,13 @@ function signIn(response, postData) {
     var reject = "This name/password is incorrect.",
     accept = "Access approved.";
     //check db if name exists, if not inserts login and encrypted password
-    queryDB.authenticate(database, login, secure_pw, reject, accept, function(context){
-      loader.loadHTML(response, templatePath, context);
+    queryDB.authenticate(login, secure_pw, reject, accept, function(context,tempName){
+      loader.loadHTML(response, tempPath + tempName, context);
     });
 
   } else {
     context = {"heading":"Fill out the whole form"};
-    loader.loadHTML(response, templatePath, context);
+    loader.loadHTML(response, loginPath, context);
   }
 }
 
@@ -54,26 +55,17 @@ function signUp(response, postData) {
     var reject = "This name is already known to us.",
     accept = "You are one of us now.";
     //check db if name exists, if not inserts login and encrypted password
-    queryDB.register(database, login, secure_pw, reject, accept, function(context){
-      loader.loadHTML(response, templatePath, context);
+    queryDB.register(login, secure_pw, reject, accept, function(context){
+      loader.loadHTML(response, loginPath, context);
     });
 
   } else {
     context = {"heading":"Fill out the whole form"};
-    loader.loadHTML(response, templatePath, context);
+    loader.loadHTML(response, loginPath, context);
   }
 }
 
-function upload(response, postData) {
-  //console.log("Request handler 'upload' was called.");
-  // response.writeHead(200, {"Content-Type": "text/plain"});
-  // response.write("You've sent the text: "+ postData);//querystring.parse(postData).text);
-  // response.end();
-  start(response, postData);
-}
-
-exports.home = home;
+exports.home_gate = homeGate;
 exports.sign_in = signIn;
 exports.sign_up = signUp;
-exports.upload = upload;
 exports.loadResource = loader.loadResource;

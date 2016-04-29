@@ -1,11 +1,14 @@
 //makes sqlite data queries
-var sqlite3 = require('sqlite3').verbose();
+var sqlite3 = require('sqlite3').verbose(),
+db_path = './src/js/backend/database/appUserData',
+home = 'home.hbs';
 
-function loginUser(db_path, login, pwhash, rejectText, acceptText, callback) {
+function loginUser(login, pwhash, rejectText, acceptText, callback) {
 
-  var db = new sqlite3.Database(db_path);
+  var db = new sqlite3.Database(db_path),
+  context = {"heading":"ASYNC ISSUES"};//default
 
-  var context = {"heading":"ASYNC ISSUES"};//default
+  var path;
 
   db.serialize(function() {
     db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
@@ -17,26 +20,25 @@ function loginUser(db_path, login, pwhash, rejectText, acceptText, callback) {
     "' AND pwhash = '" + pwhash + "'", function(err, user) {
       if (err) throw err;
       if (user) {
-        context["heading"] = acceptText;
-        context["login"] = login;
-        context["pw"] = pwhash;
+        context = {"heading" : acceptText, "login":login, "pw" : pwhash};
+        path = home;
       } else {
         context["heading"] = rejectText;
+        path = "login.hbs";
       }
     });
   });
 
   db.close(function() {
     console.log('loading page');
-    callback(context);
+    callback(context, path);
   });
 }
 
-function registerNewUser(db_path, login, pwhash, rejectText, acceptText, callback) {
+function registerNewUser(login, pwhash, rejectText, acceptText, callback) {
 
-  var db = new sqlite3.Database(db_path);
-
-  var context = {"heading":"ASYNC ISSUES"};//default
+  var db = new sqlite3.Database(db_path),
+  context = {"heading":"ASYNC ISSUES"};//default
 
   db.serialize(function() {
     db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");

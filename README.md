@@ -7,12 +7,15 @@ This boilerplate node app doesn't use express, react, angular or any other node 
 
 - `npm install`
 - `npm run develop`
+- goto http://localhost:3000/
 
 ### **local usage** ###
 
 - `npm install`
 -  `webpack`
 -  `npm start`
+- goto http://localhost:3000/
+
 
 ### **deploy** ###
 

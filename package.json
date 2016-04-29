@@ -21,6 +21,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "webpack --progress --colors --watch & node index.js",
     "start": "node index.js"
   },
   "engines": {

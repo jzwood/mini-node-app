@@ -12,8 +12,7 @@ var tempPath = '/src/templates/',
 loginPath = '/src/templates/login.hbs';
 
 function homeGate(response, postData) {
-  var id = cookies.getCookie('id');
-
+  
   var context = {
     "heading": "Hi. Who are you?"
   };

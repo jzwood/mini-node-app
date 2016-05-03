@@ -5,14 +5,19 @@ requestHandlers contains only the unique content for each page.
 var querystring = require('querystring'),
 loader = require('./loadFile'),
 queryDB = require('./queryDatabase'),
-cookies = require('./handleCookies'),
+// Cookies = require('cookies'),
 sha1 = require('sha1'); //for 1 way hash encryptions // let ct = sha1("message");
 
 var tempPath = '/src/templates/',
 loginPath = '/src/templates/login.hbs';
 
-function homeGate(response, postData) {
-  
+function homeGate(request, response, postData) {
+
+  var cookies = new Cookies( request, response, { "keys": keys } );
+  //ulc = user login credentials
+  var access_code = cookies.get("ulc", { signed: true } )
+  cookies.set( "signed", "bar", { signed: true } )
+
   var context = {
     "heading": "Hi. Who are you?"
   };
@@ -20,7 +25,7 @@ function homeGate(response, postData) {
   loader.loadHTML(response, loginPath, context);
 }
 
-function signIn(response, postData) {
+function signIn(request, response, postData) {
 
   var dataObj = querystring.parse(postData);
   var login = dataObj.login,  pw = dataObj.pw;
@@ -42,7 +47,7 @@ function signIn(response, postData) {
   }
 }
 
-function signUp(response, postData) {
+function signUp(request, response, postData) {
 
   var dataObj = querystring.parse(postData);
   var login = dataObj.login,  pw = dataObj.pw;

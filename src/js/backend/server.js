@@ -23,7 +23,7 @@ function start(route, handle){
   }
 
   http.createServer(onRequest).listen(port);
-  console.log("Server has started.");//,"encrypted",sha1("message"));
+  console.log("Server has started on port ",port);//,"encrypted",sha1("message"));
 }
 
 exports.start = start;

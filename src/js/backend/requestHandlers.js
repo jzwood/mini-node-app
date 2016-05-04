@@ -5,19 +5,31 @@ requestHandlers contains only the unique content for each page.
 var querystring = require('querystring'),
 loader = require('./loadFile'),
 queryDB = require('./queryDatabase'),
-// Cookies = require('cookies'),
+Cookies = require('cookies'),
+Keygrip = require("keygrip"),
 sha1 = require('sha1'); //for 1 way hash encryptions // let ct = sha1("message");
 
 var tempPath = '/src/templates/',
-loginPath = '/src/templates/login.hbs';
+loginPath = '/src/templates/login.hbs',
+keylist = ["du283ikf84ygdjw","18396o7fhsgsujwn5i","101i3n3nbzxqwm"],//these are random
+keys = Keygrip(keylist);
+
+function home(req, res){
+  var cookies = new Cookies( req, res, { "keys": keys } ),
+  user = cookies.get("uId", { signed: true, httpOnly: true } );
+  credentials = cookies.get("uAuth", { signed: true, httpOnly: true } );
+  if(user && credentials){
+
+  }
+}
 
 function homeGate(request, response, postData) {
 
   var cookies = new Cookies( request, response, { "keys": keys } );
   //ulc = user login credentials
-  var access_code = cookies.get("ulc", { signed: true } )
-  cookies.set( "signed", "bar", { signed: true } )
-
+  var access_code = cookies.get("loginCredentials", { signed: true, httpOnly: true } )
+  // cookies.set( "loginCredentials", "some vale here!", { signed: true, httpOnly: true } )
+  console.log('the cookie is: ', access_code);
   var context = {
     "heading": "Hi. Who are you?"
   };
@@ -69,6 +81,7 @@ function signUp(request, response, postData) {
   }
 }
 
+exports.home = home;
 exports.home_gate = homeGate;
 exports.sign_in = signIn;
 exports.sign_up = signUp;

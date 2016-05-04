@@ -52,9 +52,11 @@ function registerNewUser(login, pwhash, rejectText, acceptText, callback) {
         var date = new Date().toLocaleDateString();
         stmt.run(login, pwhash, date);
         stmt.finalize();
-        context["heading"] = acceptText;
-        context["login"] = login;
-        context["pw"] = pwhash;
+        context = {
+          "heading" : acceptText,
+          "login" : login,
+          "pw" : pwhash
+        }
       }
     });
   });

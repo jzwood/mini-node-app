@@ -129,7 +129,7 @@
 
 
 	// module
-	exports.push([module.id, "html, body {\n  background: #FAFAFA; }\n\nh1, h2, h3 {\n  text-align: center;\n  font-weight: bold;\n  font-size: 24pt;\n  padding: 20px 0 20px 0; }\n\ninput {\n  border-radius: 5px;\n  border: solid 1px black; }\n\n.form {\n  /*height: 18pt;*/\n  font-size: 18pt;\n  padding-left: 10px; }\n\n.input {\n  width: 10ch; }\n\n.container {\n  text-align: center; }\n", ""]);
+	exports.push([module.id, "html, body {\n  background: #FAFAFA; }\n\nh1, h2, h3 {\n  text-align: center;\n  font-weight: bold;\n  font-size: 24pt;\n  padding: 20px 0 20px 0; }\n\ninput {\n  border-radius: 5px;\n  border: solid 1px black; }\n\n.form {\n  /*height: 18pt;*/\n  font-size: 18pt;\n  padding-left: 10px; }\n\n.input {\n  width: 10ch; }\n\n.container {\n  text-align: center; }\n\n.home {\n  background-color: red; }\n", ""]);
 
 	// exports
 

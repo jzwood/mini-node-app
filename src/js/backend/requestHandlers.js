@@ -7,7 +7,7 @@ loader = require('./loadFile'),
 queryDB = require('./queryDatabase'),
 Cookies = require('cookies'),
 Keygrip = require("keygrip"),
-sha1 = require('sha1'); //for 1 way hash encryptions // let ct = sha1("message");
+sha1 = require('sha1') //for 1 way hash encryptions // let ct = sha1("message");
 
 var tempPath = '/src/templates/',
 loginPath = '/src/templates/login.hbs',
@@ -42,16 +42,14 @@ function signIn(request, response, postData) {
   var dataObj = querystring.parse(postData);
   var login = dataObj.login,  pw = dataObj.pw;
 
-  if (login && pw) {
-    var secure_pw = sha1(String(pw.trim())),
-    login = String(login).trim();
 
     var reject = "This name/password is incorrect.",
     accept = "Access approved.";
     //check db if name exists, if not inserts login and encrypted password
-    queryDB.authenticate(login, secure_pw, reject, accept, function(context,tempName){
+    queryDB.authenticate(login, pw, reject,
+      function(){}, function(){
       loader.loadHTML(response, tempPath + tempName, context);
-    });
+    })
 
   } else {
     context = {"heading":"Fill out the whole form"};

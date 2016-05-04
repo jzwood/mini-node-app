@@ -1,7 +1,47 @@
 //makes sqlite data queries
 var sqlite3 = require('sqlite3').verbose(),
 db_path = './src/js/backend/database/appUserData',
-home = 'home.hbs';
+home = 'home.hbs',
+sha1 = require('sha1')
+
+function detectXSSattack(str){
+  var badchs = /<|>|'|"|\\|\//
+  return badchs.test(str)
+}
+
+function registerUser(login, pt_pw, success, failure, onFinish){
+  if (login && pt_pw) {
+    var ct_pw = sha1(String(pt_pw.trim()))
+    login = String(login).trim()
+
+    var db = new sqlite3.Database(db_path)
+    db.serialize(function() {
+      db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
+      var stmt = db.prepare("INSERT INTO user_info VALUES (?,?,?)");
+      db.get("SELECT name, pwhash, date FROM user_info WHERE name = '" + login + "'", function(err, user) {
+        if (err) throw err
+        if (user) {
+          console.log('user is: ', user)
+          failure("User already registered.");
+        } else {
+          var date = new Date().toLocaleDateString()
+          stmt.run(login, pwhash, date)
+          stmt.finalize()
+          succuss()
+        }
+      });
+    });
+
+    db.close(onFinish();)
+
+  }else{
+    failure("Form improperly filled out.");
+  }
+}
+
+function isRegesteredUser(login, encr_pw, success, failure){
+
+}
 
 function loginUser(login, pwhash, rejectText, acceptText, callback) {
 

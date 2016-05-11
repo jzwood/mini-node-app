@@ -1,20 +1,22 @@
 /*
-this is where the magic starts. 'npm start'
+This is where the the node app starts.
 */
 
-var server = require("./src/js/backend/server");
-var router = require("./src/js/backend/router");
+var server = require("./src/js/backend/server"),
+router = require("./src/js/backend/router"),
+loader = require('./loadFile'),
+requestHandlers = require("./src/js/backend/requestHandlers")
 
-var requestHandlers = require("./src/js/backend/requestHandlers");
-
-var handle = {};//add custom page loads to handle here
-handle["/"] = requestHandlers.home_gate;
-// handle["/start"] = requestHandlers.start;
-handle["/upload"] = requestHandlers.upload;
-handle["/signIn"] = requestHandlers.sign_in;
-handle["/signUp"] = requestHandlers.sign_up;
+/*
+  CAN EDIT HANDLE KEY/VALUES
+  The Handle obj is the C in the MVC model, i.e. the controller.
+*/
+var handle = {} //add custom page loads to handle here
+handle["/"] = requestHandlers.home
+handle["/signIn"] = requestHandlers.sign_in
+handle["/signUp"] = requestHandlers.sign_up
 
 //for images and css etc (don't edit, works automatically)
-handle["load-resource"] = requestHandlers.loadResource;
+handle["load-resource"] = loader.loadResource
 
-server.start(router.route, handle);
+server.start(router.route, handle)

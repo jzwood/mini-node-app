@@ -1,111 +1,90 @@
-//makes sqlite data queries
+/*
+performs sqlite data queries and sets cookies
+*/
 var sqlite3 = require('sqlite3').verbose(),
 db_path = './src/js/backend/database/appUserData',
 home = 'home.hbs',
 sha1 = require('sha1')
 
-function detectXSSattack(str){
+function setLoginCookies(req,res, uname, uct_pw){
+  var cookies = new Cookies( req, res, { "keys": keys } )
+  cookies.set("uId", uname, { signed: true, httpOnly: true } )
+  cookies.set("uAuth", uct_pw, { signed: true, httpOnly: true } )
+}
+
+function detectXSSattack(str) {
   var badchs = /<|>|'|"|\\|\//
   return badchs.test(str)
 }
 
-function registerUser(login, pt_pw, success, failure, onFinish){
+function registerUser(req, res, login, pt_pw, success, failure, onFinish) {
   if (login && pt_pw) {
-    var ct_pw = sha1(String(pt_pw.trim()))
-    login = String(login).trim()
+    if (detectXSSattack(login) || detectXSSattack(pt_pw)) {
+      failure("XSS attack detected!")
+    } else {
 
-    var db = new sqlite3.Database(db_path)
-    db.serialize(function() {
-      db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
-      var stmt = db.prepare("INSERT INTO user_info VALUES (?,?,?)");
-      db.get("SELECT name, pwhash, date FROM user_info WHERE name = '" + login + "'", function(err, user) {
-        if (err) throw err
-        if (user) {
-          console.log('user is: ', user)
-          failure("User already registered.");
-        } else {
-          var date = new Date().toLocaleDateString()
-          stmt.run(login, pwhash, date)
-          stmt.finalize()
-          succuss()
-        }
-      });
-    });
+      var ct_pw = sha1(String(pt_pw.trim()))
+      login = String(login).trim()
 
-    db.close(onFinish();)
-
-  }else{
-    failure("Form improperly filled out.");
+      var db = new sqlite3.Database(db_path)
+      db.serialize(function() {
+        db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
+        var stmt = db.prepare("INSERT INTO user_info VALUES (?,?,?)");
+        db.get("SELECT name, pwhash, date FROM user_info WHERE name = '" + login + "'", function(err, user) {
+          if (err) throw err
+          if (user) {
+            console.log('user is: ', user)
+            failure("User already registered.")
+          } else {
+            var date = new Date().toLocaleDateString()
+            stmt.run(login, ct_pw, date)
+            stmt.finalize()
+            setLoginCookies(res,req,login,ct_pw)
+            succuss("Successfully registered", login)
+          }
+        })
+      })
+      db.close(onFinish)
+    }
+  } else {
+    failure("Form improperly filled out")
   }
 }
 
-function isRegesteredUser(login, encr_pw, success, failure){
+function loginUser(req, res, login, pt_pw, success, failure, onFinish) {
+  if (login && pt_pw) {
+    if (detectXSSattack(login) || detectXSSattack(pt_pw)) {
+      failure("XSS attack detected!")
+    } else {
 
-}
+      var ct_pw = sha1(String(pt_pw.trim()))
+      login = String(login).trim()
 
-function loginUser(login, pwhash, rejectText, acceptText, callback) {
-
-  var db = new sqlite3.Database(db_path),
-  context = {"heading":"ASYNC ISSUES"};//default
-
-  var path;
-
-  db.serialize(function() {
-    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
-    var date = new Date().toLocaleDateString();
-    db.run("UPDATE user_info SET date = '" + date +
-    "' WHERE name = '" + login + "' AND pwhash = '" + pwhash +
-    "' AND date != '" + date + "'");
-    db.get("SELECT name, pwhash FROM user_info WHERE name = '" + login +
-    "' AND pwhash = '" + pwhash + "'", function(err, user) {
-      if (err) throw err;
-      if (user) {
-        context = {"heading" : acceptText, "login":login, "pw" : pwhash};
-        path = home;
-      } else {
-        context["heading"] = rejectText;
-        path = "login.hbs";
-      }
-    });
-  });
-
-  db.close(function() {
-    console.log('loading page');
-    callback(context, path);
-  });
-}
-
-function registerNewUser(login, pwhash, rejectText, acceptText, callback) {
-
-  var db = new sqlite3.Database(db_path),
-  context = {"heading":"ASYNC ISSUES"};//default
-
-  db.serialize(function() {
-    db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
-    var stmt = db.prepare("INSERT INTO user_info VALUES (?,?,?)");
-    db.get("SELECT name, pwhash, date FROM user_info WHERE name = '" + login + "'", function(err, user) {
-      if (err) throw err;
-      if (user) {
-        console.log('user is: ', user);
-        context["heading"] = rejectText;
-      } else {
+      var db = new sqlite3.Database(db_path)
+      db.serialize(function() {
+        db.run("CREATE TABLE if not exists user_info (name TEXT, pwhash TEXT, date TEXT)");
         var date = new Date().toLocaleDateString();
-        stmt.run(login, pwhash, date);
-        stmt.finalize();
-        context = {
-          "heading" : acceptText,
-          "login" : login,
-          "pw" : pwhash
-        }
-      }
-    });
-  });
-
-  db.close(function() {
-    console.log('loading page');
-    callback(context);
-  });
+        db.run("UPDATE user_info SET date = '" + date +
+        "' WHERE name = '" + login + "' AND pwhash = '" + ct_pw +
+        "' AND date != '" + date + "'");
+        db.get("SELECT name, pwhash FROM user_info WHERE name = '" + login +
+        "' AND pwhash = '" + ct_pw + "'",
+        function(err, user) {
+          if (err) throw err;
+          if (user) {
+            setLoginCookies(res,req,login,ct_pw)
+            success("Successfully logged in " + user.name)
+          } else {
+            failure("Incorrect name/password")
+          }
+        })
+      })
+      db.close(onFinish);
+    }
+  }else{
+    failure("Form improperly filled out.")
+  }
 }
 
-exports.register = registerNewUser;
-exports.authenticate = loginUser;
+exports.register = registerUser;
+exports.login = loginUser;

@@ -13,7 +13,7 @@ function start(route, handle){
 
     request.addListener("data", function(dataPacket) {
       postData += dataPacket;
-      console.log("Received POST data chunk '"+ dataPacket + "'.");
+      console.log("Received POST data \'", dataPacket, "\'.");
     });
 
     request.addListener("end", function() {
@@ -23,7 +23,7 @@ function start(route, handle){
   }
 
   http.createServer(onRequest).listen(port);
-  console.log("Server has started on port ",port);//,"encrypted",sha1("message"));
+  console.log("Server has started on port",port);
 }
 
 exports.start = start;

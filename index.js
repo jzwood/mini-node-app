@@ -4,7 +4,7 @@ This is where the the node app starts.
 
 var server = require("./src/js/backend/server"),
 router = require("./src/js/backend/router"),
-loader = require('./loadFile'),
+loader = require('./src/js/backend/loadFile'),
 requestHandlers = require("./src/js/backend/requestHandlers")
 
 /*
@@ -12,7 +12,7 @@ requestHandlers = require("./src/js/backend/requestHandlers")
   The Handle obj is the C in the MVC model, i.e. the controller.
 */
 var handle = {} //add custom page loads to handle here
-handle["/"] = requestHandlers.home
+handle["/"] = requestHandlers.home_page
 handle["/signIn"] = requestHandlers.sign_in
 handle["/signUp"] = requestHandlers.sign_up
 

@@ -1,17 +1,14 @@
 /*
-performs sqlite data queries and sets cookies
+performs sqlite data queries and sets cookies from callbacks
 */
 var sqlite3 = require('sqlite3').verbose(),
-db_path = './src/js/backend/database/appUserData',
-home = 'home.hbs',
-sha1 = require('sha1')
+Keygrip = require('keygrip'),
+sha1 = require('sha1')//for 1 way hash encryptions // let ct = sha1("message")
 
-function setLoginCookies(req,res, uname, uct_pw){
-  var cookies = new Cookies( req, res, { "keys": keys } )
-  cookies.set("uId", uname, { signed: true, httpOnly: true } )
-  cookies.set("uAuth", uct_pw, { signed: true, httpOnly: true } )
-}
+var home = 'home.hbs',
+db_path = './src/js/backend/database/appUserData'
 
+//return true if any characters common to XSS attacks are present in input
 function detectXSSattack(str) {
   var badchs = /<|>|'|"|\\|\//
   return badchs.test(str)
@@ -39,8 +36,8 @@ function registerUser(req, res, login, pt_pw, success, failure, onFinish) {
             var date = new Date().toLocaleDateString()
             stmt.run(login, ct_pw, date)
             stmt.finalize()
-            setLoginCookies(res,req,login,ct_pw)
-            succuss("Successfully registered", login)
+            // setLoginCookies(res,req,login,ct_pw)
+            success("Successfully registered", login)
           }
         })
       })
@@ -70,21 +67,21 @@ function loginUser(req, res, login, pt_pw, success, failure, onFinish) {
         db.get("SELECT name, pwhash FROM user_info WHERE name = '" + login +
         "' AND pwhash = '" + ct_pw + "'",
         function(err, user) {
-          if (err) throw err;
+          if (err) throw err
           if (user) {
-            setLoginCookies(res,req,login,ct_pw)
+            //setLoginCookies(res,req,login,ct_pw)
             success("Successfully logged in " + user.name)
           } else {
             failure("Incorrect name/password")
           }
         })
       })
-      db.close(onFinish);
+      db.close(onFinish)
     }
   }else{
     failure("Form improperly filled out.")
   }
 }
 
-exports.register = registerUser;
-exports.login = loginUser;
+exports.register = registerUser
+exports.login = loginUser

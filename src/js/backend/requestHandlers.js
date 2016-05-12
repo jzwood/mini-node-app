@@ -6,19 +6,17 @@ content for each page
 var querystring = require('querystring'),
 loader = require('./loadFile'),
 queryDB = require('./queryDatabase'),
-Cookies = require('cookies'),
-Keygrip = require('keygrip'),
-sha1 = require('sha1') //for 1 way hash encryptions // let ct = sha1("message")
+cookies = require('./cookieUtils')
 
 var tempPath = '/src/templates/',
 loginPath = '/src/templates/login.hbs',
 homepagePath = '/src/templates/home.hbs'
 
-
 //helper function: tests login authentication for a given username and password
 //loads homepage on success, login page on failure
 function dbLogin(req,res,login,pw){
-  queryDB.login(req, res, login, pw, function(success_msg){
+  queryDB.login(req, res, login, pw, function(success_msg, ct_pw){
+		cookies.setLoginCookies(req,res, login, ct_pw)
     var context = {
       "heading" : success_msg,
       "login" : login,
@@ -40,20 +38,14 @@ function dbLogin(req,res,login,pw){
 //homegate page
 function homePage(req, res){
 
-  var getLoginCookies = function(){
-    var keys = Keygrip(["du283ikf84ygdjw","18396o7fhsgsujwn5i","101i3n3nbzxqwm"])//these are random
-    var cookies = new Cookies( req, res, { "keys": keys } ),
-    user = cookies.get("uId", { signed: true, httpOnly: true } ),
-    credentials = cookies.get("uAuth", { signed: true, httpOnly: true } )
-    return {"uId": user, "uAuth": credentials}
-  }
-
-  var loginCookies = getLoginCookies()
+  var loginCookies = cookies.getLoginCookies()
   if (loginCookies.uId && loginCookies.uAuth){
-    dbLogin(request, response, login, pw)
+    dbLogin(req, res, login, pw)
   }else{
     console.log("Cookie authentication failed: no cookies set")
-    loader.loadHTML(response, loginPath, context)
+    loader.loadHTML(res, loginPath, {
+			"heading" : "Hi and welcome"
+		})
   }
 }
 
@@ -63,7 +55,7 @@ function signIn(req, res, data) {
   var dataObj = querystring.parse(data),
   login = dataObj.login,  pw = dataObj.pw
   //attempt to sign in registered user
-  dbLogin(request, response, login, pw)
+  dbLogin(req, res, login, pw)
 }
 
 //for registering a new user in the app database and setting
@@ -73,8 +65,9 @@ function signUp(req, res, data) {
   var dataObj = querystring.parse(data),
   login = dataObj.login,  pw = dataObj.pw
   //attempt to register new user
-  db.register(req, res, login, pw,
-    function(success_msg){
+  queryDB.register(req, res, login, pw,
+    function(success_msg, ct_pw){
+			cookies.setLoginCookies(req, res, login, ct_pw)
       var context = {
         "heading" : success_msg,
         "login" : login,
@@ -94,4 +87,3 @@ function signUp(req, res, data) {
 exports.home_page = homePage
 exports.sign_in = signIn
 exports.sign_up = signUp
-exports.loadResource = loader.loadResource

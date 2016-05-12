@@ -14,8 +14,9 @@ function getCookiesObj(req,res){
 
 var getLoginCookies = function(req, res){
 	var cookies = getCookiesObj(req, res),
-	user = cookies.get("uId", { signed: true, httpOnly: true, overwrite: true} ),
-	credentials = cookies.get("uAuth", { signed: true, httpOnly: true ,overwrite: true } )
+	expires = 86400000 * 7, //expires in 7 days
+	user = cookies.get("uId", { signed: true} ),
+	credentials = cookies.get("uAuth", { signed: true} )
 	if(user && credentials){
 		user = cryptrObj.decrypt(user)
     credentials = cryptrObj.decrypt(credentials)
@@ -32,8 +33,8 @@ function setLoginCookies(req,res, uname, uct_pw){
 		uname = cryptrObj.encrypt(uname)
 		uct_pw = cryptrObj.encrypt(uct_pw)
 	  cookies
-			.set("uId", uname, { signed: true, httpOnly: true ,overwrite: true } )
-		  .set("uAuth", uct_pw, { signed: true, httpOnly: true, overwrite: true } )
+			.set("uId", uname, { signed: true, httpOnly: true, overwrite: true, maxAge: expires } )
+		  .set("uAuth", uct_pw, { signed: true, httpOnly: true, overwrite: true, maxAge: expires } )
 	}else{
 		console.log("name or password undefined. cannot set")
 	}

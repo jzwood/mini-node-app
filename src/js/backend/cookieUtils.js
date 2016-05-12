@@ -1,7 +1,11 @@
 var Cookies = require('cookies'),
-Keygrip = require('keygrip')
+Keygrip = require('keygrip'),
+Cryptr = require('cryptr')
 
-//returns a cookies object using cookies api encrypted with keygrip api
+//Cryptr: for encrypting cookies which are susceptible to snooping
+var cryptrObj = new Cryptr('7dasihfuhoa8ih34h09xr3408h')//the key is random
+
+//returns a cookies object using cookies api signed with keygrip api
 function getCookiesObj(req,res){
 	var keys = Keygrip(["du283ikf84ygdjw","18396o7fhsgsujwn5i","101i3n3nbzxqwm"]),//these are random
 	cookies = new Cookies( req, res, { "keys": keys } )
@@ -12,6 +16,10 @@ var getLoginCookies = function(req, res){
 	var cookies = getCookiesObj(req, res),
 	user = cookies.get("uId", { signed: true, httpOnly: true, overwrite: true} ),
 	credentials = cookies.get("uAuth", { signed: true, httpOnly: true ,overwrite: true } )
+	if(user && credentials){
+		user = cryptrObj.decrypt(user)
+    credentials = cryptrObj.decrypt(credentials)
+	}
 	console.log("getLoginCookies called: uId:", user, ", uAuth:", credentials)
 	return {"uId": user, "uAuth": credentials}
 }
@@ -21,6 +29,8 @@ function setLoginCookies(req,res, uname, uct_pw){
 	console.log("setting cookies: uId:", uname, ", ct_pw:", uct_pw)
   var cookies = getCookiesObj( req, res)
 	if(uname && uct_pw){
+		uname = cryptrObj.encrypt(uname)
+		uct_pw = cryptrObj.encrypt(uct_pw)
 	  cookies
 			.set("uId", uname, { signed: true, httpOnly: true ,overwrite: true } )
 		  .set("uAuth", uct_pw, { signed: true, httpOnly: true, overwrite: true } )

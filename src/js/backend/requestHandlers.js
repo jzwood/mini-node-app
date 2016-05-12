@@ -6,7 +6,7 @@ content for each page
 var querystring = require('querystring'),
 loader = require('./loadFile'),
 queryDB = require('./queryDatabase'),
-cookies = require('./cookieUtils')
+cookieUtils = require('./cookieUtils')
 
 var tempPath = '/src/templates/',
 loginPath = '/src/templates/login.hbs',
@@ -16,7 +16,7 @@ homepagePath = '/src/templates/home.hbs'
 //loads homepage on success, login page on failure
 function dbLogin(req,res,login,pw){
   queryDB.login(req, res, login, pw, function(success_msg, ct_pw){
-		cookies.setLoginCookies(req,res, login, ct_pw)
+		cookieUtils.setLoginCookies(req,res, login, ct_pw)
     var context = {
       "heading" : success_msg,
       "login" : login,
@@ -38,7 +38,7 @@ function dbLogin(req,res,login,pw){
 //homegate page
 function homePage(req, res){
 
-  var loginCookies = cookies.getLoginCookies()
+  var loginCookies = cookieUtils.getLoginCookies(req, res)
   if (loginCookies.uId && loginCookies.uAuth){
     dbLogin(req, res, login, pw)
   }else{
@@ -67,7 +67,7 @@ function signUp(req, res, data) {
   //attempt to register new user
   queryDB.register(req, res, login, pw,
     function(success_msg, ct_pw){
-			cookies.setLoginCookies(req, res, login, ct_pw)
+			cookieUtils.setLoginCookies(req, res, login, ct_pw)
       var context = {
         "heading" : success_msg,
         "login" : login,

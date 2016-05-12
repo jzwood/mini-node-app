@@ -2,7 +2,6 @@
 performs sqlite data queries and sets cookies from callbacks
 */
 var sqlite3 = require('sqlite3').verbose(),
-Keygrip = require('keygrip'),
 sha1 = require('sha1')//for 1 way hash encryptions // let ct = sha1("message")
 
 var home = 'home.hbs',

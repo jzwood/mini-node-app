@@ -14,13 +14,13 @@ homepagePath = '/src/templates/home.hbs'
 
 //helper function: tests login authentication for a given username and password
 //loads homepage on success, login page on failure
-function dbLogin(req,res,login,pw){
-  queryDB.login(req, res, login, pw, function(success_msg, ct_pw){
+function dbLogin(req, res, login, pw, useCookies){
+  queryDB.login(req, res, login, pw, useCookies, function(success_msg, ct_pw){
 		cookieUtils.setLoginCookies(req,res, login, ct_pw)
     var context = {
       "heading" : success_msg,
       "login" : login,
-      "pw" : "********"
+      "pw" : ct_pw
     }
     loader.loadHTML(res, homepagePath, context)
   }, function(failure_msg){
@@ -29,7 +29,7 @@ function dbLogin(req,res,login,pw){
     }
     loader.loadHTML(res, loginPath, context)
   }, function(){
-    console.log("db connection closed")
+    console.log("database sign-up query completed")
   })
 }
 
@@ -40,7 +40,7 @@ function homePage(req, res){
 
   var loginCookies = cookieUtils.getLoginCookies(req, res)
   if (loginCookies.uId && loginCookies.uAuth){
-    dbLogin(req, res, login, pw)
+    dbLogin(req, res, loginCookies.uId, loginCookies.uAuth, useCookies=true)
   }else{
     console.log("Cookie authentication failed: no cookies set")
     loader.loadHTML(res, loginPath, {
@@ -67,11 +67,11 @@ function signUp(req, res, data) {
   //attempt to register new user
   queryDB.register(req, res, login, pw,
     function(success_msg, ct_pw){
-			cookieUtils.setLoginCookies(req, res, login, ct_pw)
+			// cookieUtils.setLoginCookies(req, res, login, ct_pw) //this step will happen at login
       var context = {
         "heading" : success_msg,
         "login" : login,
-        "pw" : "********"
+        "pw" : ct_pw
       }
       loader.loadHTML(res, loginPath, context)
   }, function(failure_msg){
@@ -80,7 +80,7 @@ function signUp(req, res, data) {
     }
     loader.loadHTML(res, loginPath, context)
   }, function(){
-    console.log("db connection closed")
+    console.log("database registration completed")
   })
 }
 

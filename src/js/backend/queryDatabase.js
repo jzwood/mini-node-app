@@ -35,8 +35,7 @@ function registerUser(req, res, login, pt_pw, success, failure, onFinish) {
             var date = new Date().toLocaleDateString()
             stmt.run(login, ct_pw, date)
             stmt.finalize()
-            // setLoginCookies(res,req,login,ct_pw)
-            success("Successfully registered", login)
+            success("Successfully registered", ct_pw)
           }
         })
       })
@@ -47,13 +46,13 @@ function registerUser(req, res, login, pt_pw, success, failure, onFinish) {
   }
 }
 
-function loginUser(req, res, login, pt_pw, success, failure, onFinish) {
-  if (login && pt_pw) {
-    if (detectXSSattack(login) || detectXSSattack(pt_pw)) {
+function loginUser(req, res, login, pw, useCookies, success, failure, onFinish) {
+  if (login && pw) {
+    if (detectXSSattack(login) || detectXSSattack(pw)) {
       failure("XSS attack detected!")
     } else {
 
-      var ct_pw = sha1(String(pt_pw.trim()))
+      var ct_pw = useCookies ? pw : sha1(String(pw.trim()))
       login = String(login).trim()
 
       var db = new sqlite3.Database(db_path)
@@ -68,8 +67,7 @@ function loginUser(req, res, login, pt_pw, success, failure, onFinish) {
         function(err, user) {
           if (err) throw err
           if (user) {
-            //setLoginCookies(res,req,login,ct_pw)
-            success("Successfully logged in " + user.name)
+            success("Successfully logged in " + user.name, ct_pw)
           } else {
             failure("Incorrect name/password")
           }

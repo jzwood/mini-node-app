@@ -14,7 +14,6 @@ function getCookiesObj(req,res){
 
 var getLoginCookies = function(req, res){
 	var cookies = getCookiesObj(req, res),
-	expires = 86400000 * 7, //expires in 7 days
 	user = cookies.get("uId", { signed: true} ),
 	credentials = cookies.get("uAuth", { signed: true} )
 	if(user && credentials){
@@ -32,6 +31,7 @@ function setLoginCookies(req,res, uname, uct_pw){
 	if(uname && uct_pw){
 		uname = cryptrObj.encrypt(uname)
 		uct_pw = cryptrObj.encrypt(uct_pw)
+		var expires = 86400000 * 7 //expires in 7 days
 	  cookies
 			.set("uId", uname, { signed: true, httpOnly: true, overwrite: true, maxAge: expires } )
 		  .set("uAuth", uct_pw, { signed: true, httpOnly: true, overwrite: true, maxAge: expires } )

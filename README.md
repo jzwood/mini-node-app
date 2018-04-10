@@ -2,7 +2,7 @@
 
 This boilerplate node app doesn't use express, react, angular or any other node framework. The basic concepts of MVC exist in simple but functional forms. It uses Sqlite3 database(s), Scss and ES6 (w/ Webpack), Handlebars, and is configured for quick Heroku deployment.
 
-NOTE: Requires node version 4
+NOTE: Requires node version 5
 
 ### **development** ###
 
